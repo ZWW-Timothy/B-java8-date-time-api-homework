@@ -1,41 +1,50 @@
 package com.thoughtworks.capability.gtb;
 
 import java.time.LocalDateTime;
+import java.time.Period;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- * è„‘æ´ä¼šè®®ç³»ç»Ÿv3.0
- * 1.å½“å‰ä¼šè®®æ—¶é—´"2020-04-01 14:30:00"è¡¨ç¤ºä¼¦æ•¦çš„æœ¬åœ°æ—¶é—´ï¼Œè€Œè¾“å‡ºçš„æ–°ä¼šè®®æ—¶é—´æ˜¯èŠåŠ å“¥çš„æœ¬åœ°æ—¶é—´
- *   åœºæ™¯ï¼š
- *   a:ä¸Šä¸ªä¼šè®®æ˜¯ä¼¦æ•¦çš„åŒäº‹å®šçš„ï¼Œä»–åœ¨ç•Œé¢ä¸Šè¾“å…¥çš„æ—¶é—´æ˜¯"2020-04-01 14:30:00"ï¼Œæ‰€ä»¥æˆ‘ä»¬è¦è§£æçš„å­—ç¬¦ä¸²æ˜¯ä¼¦æ•¦çš„æœ¬åœ°æ—¶é—´
- *   b:è€Œæˆ‘ä»¬åœ¨å½“å‰æ—¶åŒº(åŒ—äº¬æ—¶åŒº)ä½¿ç”¨ç³»ç»Ÿ
- *   c:æˆ‘ä»¬è®¾ç½®å¥½æ–°ä¼šè®®æ—¶é—´åï¼Œè¦å‘ç»™èŠåŠ å“¥çš„åŒäº‹æŸ¥çœ‹ï¼Œæ‰€ä»¥æ ¼å¼åŒ–åçš„æ–°ä¼šè®®æ—¶é—´è¦æ±‚æ˜¯èŠåŠ å“¥çš„æœ¬åœ°æ—¶é—´
- * 2.ç”¨Periodæ¥å®ç°ä¸‹ä¸ªä¼šè®®æ—¶é—´çš„è®¡ç®—
+ * ÄÔ¶´»áÒéÏµÍ³v3.0
+ * 1.µ±Ç°»áÒéÊ±¼ä"2020-04-01 14:30:00"±íÊ¾Â×¶ØµÄ±¾µØÊ±¼ä£¬¶øÊä³öµÄĞÂ»áÒéÊ±¼äÊÇÖ¥¼Ó¸çµÄ±¾µØÊ±¼ä
+ *   ³¡¾°£º
+ *   a:ÉÏ¸ö»áÒéÊÇÂ×¶ØµÄÍ¬ÊÂ¶¨µÄ£¬ËûÔÚ½çÃæÉÏÊäÈëµÄÊ±¼äÊÇ"2020-04-01 14:30:00"£¬ËùÒÔÎÒÃÇÒª½âÎöµÄ×Ö·û´®ÊÇÂ×¶ØµÄ±¾µØÊ±¼ä
+ *   b:¶øÎÒÃÇÔÚµ±Ç°Ê±Çø(±±¾©Ê±Çø)Ê¹ÓÃÏµÍ³
+ *   c:ÎÒÃÇÉèÖÃºÃĞÂ»áÒéÊ±¼äºó£¬Òª·¢¸øÖ¥¼Ó¸çµÄÍ¬ÊÂ²é¿´£¬ËùÒÔ¸ñÊ½»¯ºóµÄĞÂ»áÒéÊ±¼äÒªÇóÊÇÖ¥¼Ó¸çµÄ±¾µØÊ±¼ä
+ * 2.ÓÃPeriodÀ´ÊµÏÖÏÂ¸ö»áÒéÊ±¼äµÄ¼ÆËã
  *
  * @author itutry
  * @create 2020-05-19_18:43
  */
 public class MeetingSystemV3 {
 
+  private final static ZoneId ZONE_ID_BEIJING = ZoneId.of("Asia/Shanghai");
+  private final static ZoneId ZONE_ID_CHICAGO = ZoneId.of("America/Chicago");
+  private final static ZoneId ZONE_ID_LONDON = ZoneId.of("Europe/London");
+
   public static void main(String[] args) {
     String timeStr = "2020-04-01 14:30:00";
 
-    // æ ¹æ®æ ¼å¼åˆ›å»ºæ ¼å¼åŒ–ç±»
+    // ¸ù¾İ¸ñÊ½´´½¨¸ñÊ½»¯Àà
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    // ä»å­—ç¬¦ä¸²è§£æå¾—åˆ°ä¼šè®®æ—¶é—´
+    // ´Ó×Ö·û´®½âÎöµÃµ½»áÒéÊ±¼ä
     LocalDateTime meetingTime = LocalDateTime.parse(timeStr, formatter);
 
-    LocalDateTime now = LocalDateTime.now();
-    if (now.isAfter(meetingTime)) {
-      LocalDateTime tomorrow = now.plusDays(1);
-      int newDayOfYear = tomorrow.getDayOfYear();
-      meetingTime = meetingTime.withDayOfYear(newDayOfYear);
+    ZonedDateTime meetingTimeLondon = meetingTime.atZone(ZONE_ID_LONDON);
+    ZonedDateTime meetingTimeBeijing = meetingTimeLondon.withZoneSameInstant(ZONE_ID_BEIJING);
+    ZonedDateTime now = LocalDateTime.now().atZone(ZONE_ID_BEIJING);
 
-      // æ ¼å¼åŒ–æ–°ä¼šè®®æ—¶é—´
-      String showTimeStr = formatter.format(meetingTime);
+    if (now.isAfter(meetingTimeBeijing)) {
+      ZonedDateTime nextMeetingTimeLondon = meetingTimeLondon.plus(Period.ofDays(1));
+      ZonedDateTime nextMeetingTimeChicago = nextMeetingTimeLondon.withZoneSameInstant(ZONE_ID_CHICAGO);
+
+      // ¸ñÊ½»¯ĞÂ»áÒéÊ±¼ä
+      String showTimeStr = formatter.format(nextMeetingTimeChicago);
       System.out.println(showTimeStr);
     } else {
-      System.out.println("ä¼šè®®è¿˜æ²¡å¼€å§‹å‘¢");
+      System.out.println("»áÒé»¹Ã»¿ªÊ¼ÄØ");
     }
   }
 }
